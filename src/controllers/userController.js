@@ -9,9 +9,18 @@ dotenv.config();
 async function registerUser(req, res) {
   const { username, password, email, role_id } = req.body;
   try {
+    console.log('Attempting to connect to the database with the following parameters:');
+    console.log('DB_USER:', process.env.DB_USER);
+    console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+    console.log('DB_CONNECTION_STRING:', process.env.DB_CONNECTION_STRING);
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const connection = await oracledb.getConnection();
-    const result = await connection.execute(
+    const connection = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: process.env.DB_CONNECTION_STRING
+    });
+    await connection.execute(
       `INSERT INTO Usuarios (username, password, role_id, email)
        VALUES (:username, :password, :role_id, :email)`,
       { username, password: hashedPassword, role_id, email },
@@ -20,7 +29,8 @@ async function registerUser(req, res) {
     await connection.close();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Error registering user', error: err });
+    console.error('Error registering user:', err);
+    res.status(500).json({ message: 'Error registering user', error: err.message });
   }
 }
 
@@ -51,7 +61,8 @@ async function loginUser(req, res) {
 
     res.status(200).json({ token, userId: user.USER_ID, roleId: user.ROLE_ID });
   } catch (err) {
-    res.status(500).json({ message: 'Error logging in', error: err });
+    console.error('Error logging in:', err); // Agregar log detallado
+    res.status(500).json({ message: 'Error logging in', error: err.message });
   }
 }
 
@@ -91,12 +102,14 @@ async function resetPassword(req, res) {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        return res.status(500).json({ message: 'Error sending email', error });
+        console.error('Error sending email:', error); // Agregar log detallado
+        return res.status(500).json({ message: 'Error sending email', error: error.message });
       }
       res.status(200).json({ message: 'Email sent successfully' });
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error processing request', error: err });
+    console.error('Error processing request:', err); // Agregar log detallado
+    res.status(500).json({ message: 'Error processing request', error: err.message });
   }
 }
 
@@ -117,9 +130,9 @@ async function setNewPassword(req, res) {
 
     res.status(200).json({ message: 'Password updated successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Error updating password', error: err });
+    console.error('Error updating password:', err); // Agregar log detallado
+    res.status(500).json({ message: 'Error updating password', error: err.message });
   }
 }
 
-//pene pal q lee
 module.exports = { registerUser, loginUser, resetPassword, setNewPassword };

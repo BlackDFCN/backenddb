@@ -1,11 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Importa el paquete cors
 const userRoutes = require('./src/routes/userRoutes');
 const { initialize } = require('./src/config/database');
 const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
+
+// Configura CORS
+app.use(cors({
+  origin: 'http://localhost:3000', // Cambia esto por el origen de tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(bodyParser.json());
 app.use('/api/users', userRoutes);
 
