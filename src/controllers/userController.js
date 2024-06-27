@@ -121,6 +121,4 @@ async function setNewPassword(req, res) {
   }
 }
 
-//aweonao
-
 module.exports = { registerUser, loginUser, resetPassword, setNewPassword };
