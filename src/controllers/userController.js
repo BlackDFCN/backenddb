@@ -121,5 +121,4 @@ async function setNewPassword(req, res) {
   }
 }
 
-//pene
 module.exports = { registerUser, loginUser, resetPassword, setNewPassword };
