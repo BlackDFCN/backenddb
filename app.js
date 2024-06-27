@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/userRoutes');
-const { initialize } = require('./config/database');
+const userRoutes = require('./src/routes/userRoutes');
+const { initialize } = require('./src/config/database');
 const dotenv = require('dotenv');
 dotenv.config();
 
