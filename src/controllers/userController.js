@@ -121,4 +121,5 @@ async function setNewPassword(req, res) {
   }
 }
 
+//pene pal q lee
 module.exports = { registerUser, loginUser, resetPassword, setNewPassword };
