@@ -53,4 +53,3 @@ async function execute(query, binds = [], options = {}) {
 module.exports = { initialize, close, execute };
 
 
-//asdosiadliasdhjasd
