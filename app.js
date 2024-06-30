@@ -20,7 +20,8 @@ app.use('/api/users', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-initialize().then(() => {
+initialize().then(pool => {
+  app.locals.pool = pool; // Guarda el pool de conexiones en la variable locals de Express
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
@@ -30,3 +31,4 @@ initialize().then(() => {
 });
 
 module.exports = app;
+
