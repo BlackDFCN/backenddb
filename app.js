@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Importa el paquete cors
-const userRoutes = require('./src/routes/userRoutes');
-const { initialize } = require('./src/config/database');
+const cors = require('cors');
+const userRoutes = require('./src/routes/userRoutes'); // Asegúrate de ajustar la ruta
+const { initialize, close } = require('./src/config/database');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -20,8 +20,7 @@ app.use('/api/users', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-initialize().then(pool => {
-  app.locals.pool = pool; // Guarda el pool de conexiones en la variable locals de Express
+initialize().then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
@@ -30,5 +29,12 @@ initialize().then(pool => {
   process.exit(1);
 });
 
+process.on('SIGTERM', () => {
+  close().catch(err => {
+    console.error('Failed to close database connection pool', err);
+  });
+});
+
 module.exports = app;
+
 
