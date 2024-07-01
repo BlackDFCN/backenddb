@@ -1,10 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const userRoutes = require('./src/routes/userRoutes'); // Asegúrate de ajustar la ruta
-const { initialize, close } = require('./src/config/database');
 const dotenv = require('dotenv');
 dotenv.config();
+
+const { initialize, close } = require('./src/config/database');
+const { errorHandler } = require('./src/middleware/errorHandler');
+const userRoutes = require('./src/routes/userRoutes');
+const customerRoutes = require('./src/routes/customerRoutes');
+const employeeRoutes = require('./src/routes/employeeRoutes');
+const tableRoutes = require('./src/routes/tableRoutes');
+const reservationRoutes = require('./src/routes/reservationRoutes');
+const reportRoutes = require('./src/routes/reportRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
 
@@ -16,7 +24,18 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
+
+// Rutas
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/tables', tableRoutes);
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/reports', reportRoutes);
+
+// Middleware de manejo de errores
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
@@ -36,5 +55,3 @@ process.on('SIGTERM', () => {
 });
 
 module.exports = app;
-
-

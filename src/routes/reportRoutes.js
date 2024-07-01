@@ -1,11 +1,10 @@
 const express = require('express');
+const { generarReporteDiario, generarReporteSemanal, generarReporteMensual } = require('../controllers/reportController');
+const { protect } = require('../middleware/auth');
 const router = express.Router();
-const { getDailyReport, getWeeklyReport, getMonthlyReport } = require('../controllers/reportController');
-const authenticateToken = require('../middleware/authMiddleware');
-const authorizeRoles = require('../middleware/roleMiddleware');
 
-router.get('/daily/:reportDate', authenticateToken, authorizeRoles(1, 2), getDailyReport); // Administradores y trabajadores
-router.get('/weekly/:startDate/:endDate', authenticateToken, authorizeRoles(1, 2), getWeeklyReport); // Administradores y trabajadores
-router.get('/monthly/:reportMonth', authenticateToken, authorizeRoles(1, 2), getMonthlyReport); // Administradores y trabajadores
+router.post('/daily', protect, generarReporteDiario);
+router.post('/weekly', protect, generarReporteSemanal);
+router.post('/monthly', protect, generarReporteMensual);
 
 module.exports = router;

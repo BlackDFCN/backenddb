@@ -1,75 +1,52 @@
-const oracledb = require('oracledb');
+const db = require('../config/database');
 
-async function getDailyReport(req, res) {
-  const { reportDate } = req.params;
+const generarReporteDiario = async (req, res) => {
+  const { report_date } = req.body;
   try {
-    const connection = await oracledb.getConnection({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      connectString: process.env.DB_CONNECTION_STRING
-    });
+    const connection = await db.oracledb.getConnection();
     await connection.execute(
-      `BEGIN generar_reporte_diario(:reportDate); END;`,
-      { reportDate }
+      `BEGIN generar_reporte_diario(:report_date); END;`,
+      { report_date }
     );
-    const report = await connection.execute(
-      `SELECT * FROM ReporteReservas WHERE report_date = :reportDate`,
-      { reportDate }
-    );
-    await connection.close();
-    res.status(200).json(report.rows[0]);
+    await connection.commit();
+    res.status(201).json({ message: 'Daily report generated successfully' });
   } catch (err) {
-    console.error('Error fetching daily report:', err);
-    res.status(500).json({ message: 'Error fetching daily report', error: err.message });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-async function getWeeklyReport(req, res) {
-  const { startDate, endDate } = req.params;
+const generarReporteSemanal = async (req, res) => {
+  const { start_date, end_date } = req.body;
   try {
-    const connection = await oracledb.getConnection({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      connectString: process.env.DB_CONNECTION_STRING
-    });
+    const connection = await db.oracledb.getConnection();
     await connection.execute(
-      `BEGIN generar_reporte_semanal(:startDate, :endDate); END;`,
-      { startDate, endDate }
+      `BEGIN generar_reporte_semanal(:start_date, :end_date); END;`,
+      { start_date, end_date }
     );
-    const report = await connection.execute(
-      `SELECT * FROM ReporteReservas WHERE report_date = :startDate || ' - ' || :endDate`,
-      { startDate, endDate }
-    );
-    await connection.close();
-    res.status(200).json(report.rows[0]);
+    await connection.commit();
+    res.status(201).json({ message: 'Weekly report generated successfully' });
   } catch (err) {
-    console.error('Error fetching weekly report:', err);
-    res.status(500).json({ message: 'Error fetching weekly report', error: err.message });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-async function getMonthlyReport(req, res) {
-  const { reportMonth } = req.params;
+const generarReporteMensual = async (req, res) => {
+  const { report_month } = req.body;
   try {
-    const connection = await oracledb.getConnection({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      connectString: process.env.DB_CONNECTION_STRING
-    });
+    const connection = await db.oracledb.getConnection();
     await connection.execute(
-      `BEGIN generar_reporte_mensual(:reportMonth); END;`,
-      { reportMonth }
+      `BEGIN generar_reporte_mensual(:report_month); END;`,
+      { report_month }
     );
-    const report = await connection.execute(
-      `SELECT * FROM ReporteReservas WHERE report_date = :reportMonth`,
-      { reportMonth }
-    );
-    await connection.close();
-    res.status(200).json(report.rows[0]);
+    await connection.commit();
+    res.status(201).json({ message: 'Monthly report generated successfully' });
   } catch (err) {
-    console.error('Error fetching monthly report:', err);
-    res.status(500).json({ message: 'Error fetching monthly report', error: err.message });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-module.exports = { getDailyReport, getWeeklyReport, getMonthlyReport };
+module.exports = {
+  generarReporteDiario,
+  generarReporteSemanal,
+  generarReporteMensual
+};
