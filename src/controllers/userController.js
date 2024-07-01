@@ -1,50 +1,68 @@
-const oracledb = require('oracledb');
+const db = require('../config/database');
 
-async function getUserProfile(req, res) {
-  const userId = req.user.userId;
+const crearUsuario = async (req, res) => {
+  const { username, password, role_id, email } = req.body;
   try {
-    const connection = await oracledb.getConnection();
-    const result = await connection.execute(
-      `SELECT * FROM Usuarios WHERE user_id = :userId`,
-      { userId }
-    );
-    await connection.close();
-
-    if (result.rows.length === 0) {
-      return res.status(400).json({ message: 'User not found' });
-    }
-
-    const user = result.rows[0];
-    res.status(200).json({
-      user_id: user[0],
-      username: user[1],
-      email: user[4],
-      role_id: user[3],
-      created_at: user[5],
-      updated_at: user[6]
-    });
-  } catch (err) {
-    console.error('Error fetching user profile:', err);
-    res.status(500).json({ message: 'Error fetching user profile', error: err.message });
-  }
-}
-
-async function updateUserProfile(req, res) {
-  const userId = req.user.userId;
-  const { username, email, role_id } = req.body;
-  try {
-    const connection = await oracledb.getConnection();
+    const connection = await db.oracledb.getConnection();
     await connection.execute(
-      `UPDATE Usuarios SET username = :username, email = :email, role_id = :role_id, updated_at = CURRENT_TIMESTAMP WHERE user_id = :userId`,
-      { username, email, role_id, userId },
-      { autoCommit: true }
+      `BEGIN crear_usuario(:username, :password, :role_id, :email); END;`,
+      { username, password, role_id, email }
     );
-    await connection.close();
-    res.status(200).json({ message: 'User profile updated successfully' });
+    await connection.commit();
+    res.status(201).json({ message: 'User created successfully' });
   } catch (err) {
-    console.error('Error updating user profile:', err);
-    res.status(500).json({ message: 'Error updating user profile', error: err.message });
+    res.status(500).json({ error: err.message });
   }
-}
+};
 
-module.exports = { getUserProfile, updateUserProfile };
+const leerUsuario = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const connection = await db.oracledb.getConnection();
+    const result = await connection.execute(
+      `BEGIN leer_usuario(:id, :cur); END;`,
+      { id }
+    );
+    res.status(200).json(result.outBinds.cur);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const actualizarUsuario = async (req, res) => {
+  const { id } = req.params;
+  const { username, password, role_id, email } = req.body;
+  try {
+    const connection = await db.oracledb.getConnection();
+    await connection.execute(
+      `BEGIN actualizar_usuario(:id, :username, :password, :role_id, :email); END;`,
+      { id, username, password, role_id, email }
+    );
+    await connection.commit();
+    res.status(200).json({ message: 'User updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const borrarUsuario = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const connection = await db.oracledb.getConnection();
+    await connection.execute(
+      `BEGIN borrar_usuario(:id); END;`,
+      { id }
+    );
+    await connection.commit();
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = {
+  crearUsuario,
+  leerUsuario,
+  actualizarUsuario,
+  borrarUsuario
+};

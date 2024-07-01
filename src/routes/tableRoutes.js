@@ -1,12 +1,12 @@
 const express = require('express');
+const { crearMesa, leerMesa, actualizarMesa, borrarMesa } = require('../controllers/tableController');
+const { validateTable } = require('../middleware/validators');
+const { protect } = require('../middleware/auth');
 const router = express.Router();
-const { createTable, getTables, updateTable, deleteTable } = require('../controllers/tableController');
-const authenticateToken = require('../middleware/authMiddleware');
-const authorizeRoles = require('../middleware/roleMiddleware');
 
-router.post('/', authenticateToken, authorizeRoles(1, 2), createTable); // Administradores y trabajadores
-router.get('/', authenticateToken, getTables); // Todos los roles
-router.put('/:id', authenticateToken, authorizeRoles(1, 2), updateTable); // Administradores y trabajadores
-router.delete('/:id', authenticateToken, authorizeRoles(1), deleteTable); // Solo administradores
+router.post('/', protect, validateTable, crearMesa);
+router.get('/:id', protect, leerMesa);
+router.put('/:id', protect, validateTable, actualizarMesa);
+router.delete('/:id', protect, borrarMesa);
 
 module.exports = router;

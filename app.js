@@ -1,15 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const userRoutes = require('./src/routes/userRoutes'); 
-const authRoutes = require('./src/routes/authRoutes'); 
-const logRoutes = require('./src/routes/logRoutes'); 
-const reportRoutes = require('./src/routes/reportRoutes'); 
-const reservationRoutes = require('./src/routes/reservationRoutes'); 
-const tableRoutes = require('./src/routes/tableRoutes'); 
-const { initialize, close } = require('./src/config/database');
 const dotenv = require('dotenv');
 dotenv.config();
+
+const { initialize, close } = require('./src/config/database');
+const { errorHandler } = require('./src/middleware/errorHandler');
+const userRoutes = require('./src/routes/userRoutes');
+const customerRoutes = require('./src/routes/customerRoutes');
+const employeeRoutes = require('./src/routes/employeeRoutes');
+const tableRoutes = require('./src/routes/tableRoutes');
+const reservationRoutes = require('./src/routes/reservationRoutes');
+const reportRoutes = require('./src/routes/reportRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
 
@@ -21,12 +24,10 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
-app.use('/api/users', userRoutes);
+
+// Rutas
 app.use('/api/auth', authRoutes);
-app.use('/api/log', logRoutes);
-app.use('/api/report', reportRoutes);
-app.use('/api/reservation', reservationRoutes); // Cambio: Corregir la ruta de reservas
-app.use('/api/table', tableRoutes); // Cambio: Corregir la ruta de mesas
+app.use('/api/users', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
