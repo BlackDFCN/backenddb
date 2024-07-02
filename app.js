@@ -21,10 +21,12 @@ const employeeRoutes = require('./src/routes/employeeRoutes');
 const tableRoutes = require('./src/routes/tableRoutes');
 const reservationRoutes = require('./src/routes/reservationRoutes');
 const reportRoutes = require('./src/routes/reportRoutes');
+const roleRoutes = require('./src/routes/roleRoutes');
 
 // Usar rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/tables', tableRoutes);
