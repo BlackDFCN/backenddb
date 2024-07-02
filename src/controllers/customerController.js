@@ -1,7 +1,10 @@
 const db = require('../config/database');
 
+// Crear un nuevo cliente
 const crearCliente = async (req, res) => {
   const { first_name, last_name, phone_number, email } = req.body;
+  console.log('Datos recibidos para crear cliente:', { first_name, last_name, phone_number, email });
+  
   try {
     const connection = await db.oracledb.getConnection();
     await connection.execute(
@@ -9,14 +12,19 @@ const crearCliente = async (req, res) => {
       { first_name, last_name, phone_number, email }
     );
     await connection.commit();
-    res.status(201).json({ message: 'Customer created successfully' });
+    console.log('Cliente creado exitosamente');
+    res.status(201).json({ message: 'Cliente creado exitosamente' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al crear cliente:', err.message);
+    res.status(500).json({ error: 'Error al crear cliente' });
   }
 };
 
+// Leer un cliente por ID
 const leerCliente = async (req, res) => {
   const { id } = req.params;
+  console.log('Datos recibidos para leer cliente:', { id });
+  
   try {
     const connection = await db.oracledb.getConnection();
     const result = await connection.execute(
@@ -24,14 +32,19 @@ const leerCliente = async (req, res) => {
       { id }
     );
     res.status(200).json(result.outBinds.cur);
+    console.log('Cliente leído exitosamente');
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al leer cliente:', err.message);
+    res.status(500).json({ error: 'Error al leer cliente' });
   }
 };
 
+// Actualizar un cliente por ID
 const actualizarCliente = async (req, res) => {
   const { id } = req.params;
   const { first_name, last_name, phone_number, email } = req.body;
+  console.log('Datos recibidos para actualizar cliente:', { id, first_name, last_name, phone_number, email });
+  
   try {
     const connection = await db.oracledb.getConnection();
     await connection.execute(
@@ -39,14 +52,19 @@ const actualizarCliente = async (req, res) => {
       { id, first_name, last_name, phone_number, email }
     );
     await connection.commit();
-    res.status(200).json({ message: 'Customer updated successfully' });
+    console.log('Cliente actualizado exitosamente');
+    res.status(200).json({ message: 'Cliente actualizado exitosamente' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al actualizar cliente:', err.message);
+    res.status(500).json({ error: 'Error al actualizar cliente' });
   }
 };
 
+// Borrar un cliente por ID
 const borrarCliente = async (req, res) => {
   const { id } = req.params;
+  console.log('Datos recibidos para borrar cliente:', { id });
+  
   try {
     const connection = await db.oracledb.getConnection();
     await connection.execute(
@@ -54,9 +72,11 @@ const borrarCliente = async (req, res) => {
       { id }
     );
     await connection.commit();
-    res.status(200).json({ message: 'Customer deleted successfully' });
+    console.log('Cliente borrado exitosamente');
+    res.status(200).json({ message: 'Cliente borrado exitosamente' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al borrar cliente:', err.message);
+    res.status(500).json({ error: 'Error al borrar cliente' });
   }
 };
 

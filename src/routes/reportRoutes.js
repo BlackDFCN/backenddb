@@ -1,10 +1,16 @@
 const express = require('express');
-const { generarReporteDiario, generarReporteSemanal, generarReporteMensual } = require('../controllers/reportController');
+const { generarReporteDiario, generarReporteSemanal, generarReporteMensual } = require('../controllers/reporteController');
+const { validateReport } = require('../middleware/validators');
 const { protect } = require('../middleware/auth');
 const router = express.Router();
 
-router.post('/daily', protect, generarReporteDiario);
-router.post('/weekly', protect, generarReporteSemanal);
-router.post('/monthly', protect, generarReporteMensual);
+// Ruta para generar reporte diario
+router.post('/diario', protect, validateReport('diario'), generarReporteDiario);
+
+// Ruta para generar reporte semanal
+router.post('/semanal', protect, validateReport('semanal'), generarReporteSemanal);
+
+// Ruta para generar reporte mensual
+router.post('/mensual', protect, validateReport('mensual'), generarReporteMensual);
 
 module.exports = router;

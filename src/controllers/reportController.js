@@ -1,7 +1,10 @@
 const db = require('../config/database');
 
+// Generar reporte diario
 const generarReporteDiario = async (req, res) => {
   const { report_date } = req.body;
+  console.log('Datos recibidos para generar reporte diario:', { report_date });
+
   try {
     const connection = await db.oracledb.getConnection();
     await connection.execute(
@@ -9,14 +12,19 @@ const generarReporteDiario = async (req, res) => {
       { report_date }
     );
     await connection.commit();
-    res.status(201).json({ message: 'Daily report generated successfully' });
+    console.log('Reporte diario generado exitosamente');
+    res.status(201).json({ message: 'Reporte diario generado exitosamente' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al generar reporte diario:', err.message);
+    res.status(500).json({ error: 'Error al generar reporte diario' });
   }
 };
 
+// Generar reporte semanal
 const generarReporteSemanal = async (req, res) => {
   const { start_date, end_date } = req.body;
+  console.log('Datos recibidos para generar reporte semanal:', { start_date, end_date });
+
   try {
     const connection = await db.oracledb.getConnection();
     await connection.execute(
@@ -24,14 +32,19 @@ const generarReporteSemanal = async (req, res) => {
       { start_date, end_date }
     );
     await connection.commit();
-    res.status(201).json({ message: 'Weekly report generated successfully' });
+    console.log('Reporte semanal generado exitosamente');
+    res.status(201).json({ message: 'Reporte semanal generado exitosamente' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al generar reporte semanal:', err.message);
+    res.status(500).json({ error: 'Error al generar reporte semanal' });
   }
 };
 
+// Generar reporte mensual
 const generarReporteMensual = async (req, res) => {
   const { report_month } = req.body;
+  console.log('Datos recibidos para generar reporte mensual:', { report_month });
+
   try {
     const connection = await db.oracledb.getConnection();
     await connection.execute(
@@ -39,9 +52,11 @@ const generarReporteMensual = async (req, res) => {
       { report_month }
     );
     await connection.commit();
-    res.status(201).json({ message: 'Monthly report generated successfully' });
+    console.log('Reporte mensual generado exitosamente');
+    res.status(201).json({ message: 'Reporte mensual generado exitosamente' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error al generar reporte mensual:', err.message);
+    res.status(500).json({ error: 'Error al generar reporte mensual' });
   }
 };
 
