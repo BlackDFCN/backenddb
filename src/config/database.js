@@ -24,7 +24,7 @@ async function initialize() {
 
 async function close() {
   try {
-    await oracledb.getPool().close();
+    await oracledb.getPool().close(0); // Forzar cierre incluso si hay conexiones en uso
     console.log('Database connection pool closed');
   } catch (err) {
     console.error('Error closing database connection pool:', err);
@@ -39,6 +39,9 @@ async function execute(query, binds = [], options = {}) {
   try {
     connection = await oracledb.getConnection();
     const result = await connection.execute(query, binds, options);
+    if (options.autoCommit) {
+      await connection.commit(); // Commit si autoCommit está activado
+    }
     return result;
   } catch (err) {
     console.error('Error executing query:', err);
