@@ -9,6 +9,7 @@ const crearRol = async (req, res) => {
     const query = `BEGIN crear_rol(:role_name); END;`;
     const binds = { role_name };
     await db.execute(query, binds, { autoCommit: true });
+    console.log('Rol creado exitosamente');
     res.status(201).json({ message: 'Rol creado exitosamente' });
   } catch (err) {
     console.error('Error al crear rol:', err);
@@ -34,6 +35,7 @@ const leerRol = async (req, res) => {
     }
     await cursor.close();
 
+    console.log('Rol leído exitosamente');
     res.status(200).json(roles);
   } catch (err) {
     console.error('Error al leer rol:', err);
@@ -51,6 +53,7 @@ const actualizarRol = async (req, res) => {
     const query = `BEGIN actualizar_rol(:id, :role_name); END;`;
     const binds = { id, role_name };
     await db.execute(query, binds, { autoCommit: true });
+    console.log('Rol actualizado exitosamente');
     res.status(200).json({ message: 'Rol actualizado exitosamente' });
   } catch (err) {
     console.error('Error al actualizar rol:', err);
@@ -67,6 +70,7 @@ const borrarRol = async (req, res) => {
     const query = `BEGIN borrar_rol(:id); END;`;
     const binds = { id };
     await db.execute(query, binds, { autoCommit: true });
+    console.log('Rol borrado exitosamente');
     res.status(200).json({ message: 'Rol borrado exitosamente' });
   } catch (err) {
     console.error('Error al borrar rol:', err);

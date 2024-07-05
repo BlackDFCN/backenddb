@@ -76,32 +76,25 @@ const validateEmployee = [
   },
 ];
 
-const validateTable = [
-  // Validar y sanitizar el número de mesa
-  body('table_number')
-    .notEmpty().withMessage('El número de mesa es obligatorio')
-    .isInt({ min: 1 }).withMessage('El número de mesa debe ser un número entero positivo'),
+const validateTable = (req, res, next) => {
+  const { table_number, capacity, status } = req.body;
   
-  // Validar y sanitizar la capacidad
-  body('capacity')
-    .notEmpty().withMessage('La capacidad es obligatoria')
-    .isInt({ min: 1 }).withMessage('La capacidad debe ser un número entero positivo'),
+  if (typeof table_number !== 'number' || table_number <= 0) {
+    return res.status(400).json({ error: 'Invalid table number' });
+  }
 
-  // Validar y sanitizar el estado
-  body('status')
-    .notEmpty().withMessage('El estado es obligatorio')
-    .isIn(['disponible', 'reservada', 'mantenimiento']).withMessage('Estado inválido'),
+  if (typeof capacity !== 'number' || capacity <= 0) {
+    return res.status(400).json({ error: 'Invalid capacity' });
+  }
 
-  // Manejar los errores de validación
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log('Errores de validación:', errors.array());
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-];
+  const validStatuses = ['disponible', 'reservada', 'mantenimiento'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+
+  next();
+};
+
 
 const validateReservation = [
   // Validar y sanitizar el ID del cliente
@@ -192,11 +185,24 @@ const validateReport = (type) => {
   }
 };
 
+const validateRole = [
+  body('role_name').notEmpty().withMessage('El nombre del rol es obligatorio'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('Errores de validación:', errors.array());
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
 module.exports = {
   validateUser,
   validateCustomer,
   validateEmployee,
   validateTable,
   validateReservation,
-  validateReport
+  validateReport,
+  validateRole
 };
